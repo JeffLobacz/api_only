@@ -5,8 +5,12 @@ class UserSerializer < ActiveModel::Serializer
     object.full_name
   end
 
+  def password
+    object.password
+  end
+
   def created_at
     object.created_at.strftime('%B %d %Y')
   end
-  
+
 end
