@@ -5,9 +5,12 @@ class Api::ListsController < ApiController
   def create
     user = User.find(params[:user_id])
     list = user.lists.build(list_params)
-
-    if list.save
-      render json: list
+    if params[:list][:permissions] == "private" || params[:list][:permissions] == "viewable" || params[:list][:permissions] == "open"
+      if list.save
+        render json: list
+      else
+        render json: { errors: list.errors.full_messages }, status: :unprocessable_entity
+      end
     else
       render json: { errors: list.errors.full_messages }, status: :unprocessable_entity
     end
