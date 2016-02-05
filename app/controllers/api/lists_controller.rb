@@ -2,17 +2,28 @@ class Api::ListsController < ApiController
 
   before_action :authenticated?
 
-  # def index
-  #   lists = List.all
-  #   render json: lists, each_serializer: ListSerializer
-  # end
-  #
   def create
     user = User.find(params[:user_id])
     list = user.lists.build(list_params)
+    if params[:list][:permissions] == "private" || params[:list][:permissions] == "viewable" || params[:list][:permissions] == "open"
+      if list.save
+        render json: list
+      else
+        render json: { errors: list.errors.full_messages }, status: :unprocessable_entity
+      end
+    else
+      render json: { errors: list.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
 
-    if list.save
-      render json: list
+  def update
+    list = List.find(params[:id])
+    if params[:list][:permissions] == "private" || params[:list][:permissions] == "viewable" || params[:list][:permissions] == "open"
+      if list.update(list_params)
+        render json: list
+      else
+        render json: { errors: list.errors.full_messages }, status: :unprocessable_entity
+      end
     else
       render json: { errors: list.errors.full_messages }, status: :unprocessable_entity
     end
